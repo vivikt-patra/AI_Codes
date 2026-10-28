@@ -1,45 +1,69 @@
-def alpha_beta(depth, node_index, is_max, scores, height, alpha, beta):
+import math
 
-    if depth >= height:
-        return scores[node_index]
+def alpha_beta(depth, node_index, maximizing_player,
+               values, alpha, beta, height):
 
-    if is_max:
-        best = -999999
-        val = alpha_beta(depth + 1, node_index * 2, False, scores, height, alpha, beta)
-        best = max(best, val)
-        alpha = max(alpha, best)
+    if depth == height:
+        return values[node_index]
 
-        if beta <= alpha:
-            return best
+    if maximizing_player:
+        best = -math.inf
 
-        val = alpha_beta(depth + 1, node_index * 2 + 1, False, scores, height, alpha, beta)
-        best = max(best, val)
+        for i in range(2):
+            value = alpha_beta(
+                depth + 1,
+                node_index * 2 + i,
+                False,
+                values,
+                alpha,
+                beta,
+                height
+            )
+
+            best = max(best, value)
+            alpha = max(alpha, best)
+
+            if beta <= alpha:
+                break
+
         return best
 
     else:
-        best = 999999
-        val = alpha_beta(depth + 1, node_index * 2, True, scores, height, alpha, beta)
-        best = min(best, val)
-        beta = min(beta, best)
+        best = math.inf
 
-        if beta <= alpha:
-            return best
+        for i in range(2):
+            value = alpha_beta(
+                depth + 1,
+                node_index * 2 + i,
+                True,
+                values,
+                alpha,
+                beta,
+                height
+            )
 
-        val = alpha_beta(depth + 1, node_index * 2 + 1, True, scores, height, alpha, beta)
-        best = min(best, val)
+            best = min(best, value)
+            beta = min(beta, best)
+
+            if beta <= alpha:
+                break
+
         return best
 
 
 # Main Program
-scores = list(map(int, input("Enter the values of the leaf nodes: ").split()))
+values = list(map(int, input("Enter the leaf node values: ").split()))
 
 height = 3
 
-result = alpha_beta(0, 0, True, scores, height, -999999, 999999)
+result = alpha_beta(
+    0, 0, True, values,
+    -math.inf, math.inf, height
+)
 
 print("\nThe optimal value is:", result)
 
 #output
-# Enter the values of the leaf nodes: 3 5 2 9 12 5 23 23
+# Enter the leaf node values: 3 5 2 9 12 5 23 23
 # 
 # The optimal value is: 12
